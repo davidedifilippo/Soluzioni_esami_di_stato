@@ -56,7 +56,7 @@ while(digitalRead(!startButtonPin)); //pull-up resistor -> se non premuto HIGH
 
 
 
-if(!impastoFinito){
+if(impastoFinito){
 
 digitalWrite(pincontrolloImmissionmeFarina, HIGH);
 
