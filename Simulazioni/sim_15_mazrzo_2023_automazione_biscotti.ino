@@ -10,6 +10,7 @@ const int pincontrolloImmissionmeFarina = 5;
 
 
 int contaB = 0;
+int contaImpulsiAcqua = 0;
 bool impastoFinito = true;
 byte pesoFarina =0;  
 
@@ -24,7 +25,7 @@ void contaBiscotti()
 
 void contaImpulsi()
 {
-     contaB++;
+     contaImpulsiAcqua++;
     }
 
 
@@ -52,7 +53,7 @@ attachInterrupt(digitalPinToInterrupt(pinSensoreFlussoAcqua), contaImpulsi, RISI
 
 void loop() {
   
-while(digitalRead(!startButtonPin)); //pull-up resistor -> se non premuto HIGH   
+while(!digitalRead(startButtonPin)); //pull-up resistor -> se non premuto HIGH   
 
 
 
@@ -69,9 +70,13 @@ pesoFarina = (x/1023)*100;
 
 } while(pesoFarina<80);
 
-
-
-
+digitalWrite(pincontrolloImmissionmeFarina, LOW);
+digitalWrite(scivoloFarina, HIGH);
+digitalWrite(pinSensoreFlussoAcqua, HIGH);
+while(contaImpulsiAcqua<=500);
+ digitalWrite(pinSensoreFlussoAcqua, LOW);    
+     
+     
 }
 
 }
