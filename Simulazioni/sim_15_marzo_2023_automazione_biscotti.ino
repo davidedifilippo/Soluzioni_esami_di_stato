@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 /*Definizione dei pin digitali d'ingresso*/
-const int startButtonPin = 4; //Pulsante di Start
+const int startButtonPin = 12; //Pulsante di Start
 const int pinSensoreBiscotti = 2; //il cambio di stato innesca un interrupt del micro
 const int pinSensoreFlussoAcqua = 3; //il cambio di stato innesca un interrupt del micro
 const int pinSensoreTegliaPresente = 4;
