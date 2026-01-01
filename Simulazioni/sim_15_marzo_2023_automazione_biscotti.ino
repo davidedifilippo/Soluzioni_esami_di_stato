@@ -1,19 +1,21 @@
-ì#include <Arduino.h>
+#include <Arduino.h>
 
 /*Definizione dei pin digitali d'ingresso*/
-const int startButtonPin = 4; //Pulsante di Start
-const int pinSensoreBiscotti = 2; //il cambio di stato innesca un interrupt del micro
-const int pinSensoreFlussoAcqua = 3; //il cambio di stato innesca un interrupt del micro
-const int pinSensoreTegliaPresente = 4;
+const int startButtonPin = 2; //Pulsante di Start
+const int pinSensoreBiscotti = 3; //il cambio di stato innesca un interrupt del micro
+const int pinSensoreFlussoAcqua = 4; //il cambio di stato innesca un interrupt del micro
+const int pinSensoreTegliaPresente = 5;
 
 /*Definizione dei pin digitali di uscita*/
-const int pinControlloImmissioneFarina = 5; 
-const int pinControlloImmissioneAcqua= 6;
-const int pinControlloImmissioneLievito= 7;
-const int pinControlloScivoloFarina = 8;
-const int pinControlloFrullino = 9;
-const int pinControlloCoclea = 10;
-const int pinControlloPinzaSigillatura = 11;
+const int pinControlloImmissioneFarina = 6; 
+const int pinControlloImmissioneAcqua= 7;
+const int pinControlloImmissioneLievito= 8;
+const int pinControlloScivoloFarina = 9;
+const int pinControlloFrullino = 10;
+const int pinControlloCoclea = 11;
+const int pinControlloPinzaSigillatura = 12;
+const int pinControlloMAT_Teglie = 13;
+const int pinControlloMAT_Forno = 14;
 
 
 /*Definizione dei pin Analogici */
@@ -61,11 +63,14 @@ pinMode(pinControlloImmissioneLievito, OUTPUT);
 pinMode(pinControlloFrullino, OUTPUT);
 pinMode(pinControlloCoclea, OUTPUT);
 pinMode(pinControlloPinzaSigillatura, OUTPUT);
+pinMode(pinControlloMAT_Teglie, OUTPUT);
+pinMode(pinControlloMAT_Forno, OUTPUT);
 
 //associamo le routine di interrupt ai piedini sensibili ai fronti di discesa/salita
 attachInterrupt(digitalPinToInterrupt(pinSensoreBiscotti), contaBiscotti, FALLING); 
 attachInterrupt(digitalPinToInterrupt(pinSensoreFlussoAcqua), contaImpulsiFlussimetro, FALLING); 
 
+digitalWrite(pinControlloMAT_Forno, HIGH); //Nastro forno sempre attivo
 }
 
 void loop() {
@@ -111,9 +116,11 @@ digitalWrite(pinControlloFrullino, LOW); //Fermo il frullino
 //Se l'impasto ancora è presente (non è finito)
 if (!impastoFinito) {
 
-  while(!tegliaPresente) 
-  tegliaPresente = digitalRead(pinSensoreTegliaPresente);
-
+  while(!tegliaPresente) {
+    digitalWrite(pinControlloMAT_Teglie, HIGH);
+    tegliaPresente = digitalRead(pinSensoreTegliaPresente);
+  }
+  
   digitalWrite(pinControlloCoclea, HIGH); //Aziono la coclea per 4 secondi
   segnaTempo = millis(); //Memorizzo l'attimo di inizio spinta impasto
   while (millis()- segnaTempo <= timeoutCoclea); //Continuo a spingere per 4 secondi
