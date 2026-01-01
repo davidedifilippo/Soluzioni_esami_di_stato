@@ -1,7 +1,7 @@
-#include <Arduino.h>
+ì#include <Arduino.h>
 
 /*Definizione dei pin digitali d'ingresso*/
-const int startButtonPin = 12; //Pulsante di Start
+const int startButtonPin = 4; //Pulsante di Start
 const int pinSensoreBiscotti = 2; //il cambio di stato innesca un interrupt del micro
 const int pinSensoreFlussoAcqua = 3; //il cambio di stato innesca un interrupt del micro
 const int pinSensoreTegliaPresente = 4;
@@ -101,25 +101,33 @@ digitalWrite(pinControlloImmissioneLievito, LOW); //Basta lievito
 
 digitalWrite(pinControlloFrullino, HIGH); //Impastiamo per 5 minuti
 
-segnaTempo = millis(); //Memorizzo l'attimo di inizio immissione lievito 
-while (millis()- segnaTempo <= timeoutFrullino); //Continuo a immettere lievito per 5 secondi
+segnaTempo = millis(); //Memorizzo l'attimo di inizio impasto
+while (millis()- segnaTempo <= timeoutFrullino); //Continuo a impastare per 5 minuti
 digitalWrite(pinControlloFrullino, LOW); //Fermo il frullino
 
 
 } //Preparazione impasto conclusa
 
+//Se l'impasto ancora è presente (non è finito)
+if (!impastoFinito) {
 
-while(!tegliaPresente) 
+  while(!tegliaPresente) 
   tegliaPresente = digitalRead(pinSensoreTegliaPresente);
 
-digitalWrite(pinControlloCoclea, HIGH); //Aziono la coclea per 4 secondi
-segnaTempo = millis(); //Memorizzo l'attimo di inizio immissione lievito 
-while (millis()- segnaTempo <= timeoutCoclea); //Continuo a immettere lievito per 5 secondi
-digitalWrite(pinControlloCoclea, LOW); //Fermo il frullino
+  digitalWrite(pinControlloCoclea, HIGH); //Aziono la coclea per 4 secondi
+  segnaTempo = millis(); //Memorizzo l'attimo di inizio spinta impasto
+  while (millis()- segnaTempo <= timeoutCoclea); //Continuo a spingere per 4 secondi
+  digitalWrite(pinControlloCoclea, LOW); //Fermo la coclea
 
-contaErogazioni++;
+  contaErogazioni++;
 
-if (contaErogazioni > maxErogazioni ) impastoFinito = true;
+  
+}
+
+if (contaErogazioni > maxErogazioni ) {
+  impastoFinito = true; //massimo 200 erogazioni
+  contaErogazioni = 0;
+  }
 
 if (contatoreBiscotti == 10) {
    digitalWrite(pinControlloPinzaSigillatura, HIGH);
@@ -127,6 +135,4 @@ if (contatoreBiscotti == 10) {
   }
 else 
   digitalWrite(pinControlloPinzaSigillatura, LOW);
-
-
 }
